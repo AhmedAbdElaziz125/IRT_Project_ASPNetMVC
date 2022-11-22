@@ -1,0 +1,62 @@
+﻿@model IRT_Project_ASPNetMVC.Models.Matrice
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h4>TDImatrice</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        @{
+            if (Model.Documents != null && Model.Terms != null)
+            {
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th class="col"> # </th>
+                            @foreach (var doc in Model.Documents)
+                            {
+                                <th class="col"> @doc.DOC_Name </th>
+                            }
+                            <th class="col"></th>
+                            <th class="col"></th>
+                            <th class="col"> TF </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var term in Model.Terms)
+                        {
+                            int tf = 0; 
+                            <tr>
+                                <th class="row"> @term </th>
+                                @foreach (var doc in Model.Documents)
+                                {
+                                    if (doc.DOC_Terms.Contains(term))
+                                    {
+                                        <td> 1 </td>
+                                        tf++;
+                                    }
+                                    else
+                                    {
+                                        <td> 0 </td>
+                                    }
+                                }
+                                <td></td>
+                                <td></td>
+                                <td> @tf </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        }
+    </div>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+@*
+    
+*@
+
