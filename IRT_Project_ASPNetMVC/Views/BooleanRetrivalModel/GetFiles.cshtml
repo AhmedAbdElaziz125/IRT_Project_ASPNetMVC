@@ -1,0 +1,44 @@
+﻿@model IRT_Project_ASPNetMVC.Models.Files
+
+@{
+    ViewData["Title"] = "GetFiles";
+}
+
+<h1>GetFiles</h1>
+@{
+if (Model != null)
+{
+    if (Model.files != null)
+    {
+        int count = 1;
+        var filename = "txt" + count;
+        <ul class="list-group">
+            @foreach (var file in Model.files)
+            {
+                //
+                <li class="list-group-item d-flex justify-content-between align-items-center"
+                    data-bs-toggle="collapse" href="#@filename" role="button" aria-expanded="false" aria-controls="@filename">
+                    <code>@file.FileName</code>
+                    <span class="badge bg-primary rounded-pill">@file.FileWords.Count()</span>
+                </li>
+                <div class="collapse" id="@filename">
+                    <div class="card card-body">
+                        <ol class="list-group list-group-numbered">
+                            @foreach (var word in file.FileWords)
+                            {
+                                <li class="list-group-item">@word</li>
+                            }
+                        </ol>
+                    </div>
+                </div>
+                count++;
+                filename += filename + count;
+            }
+        </ul>
+    }
+    else
+    {
+        <h> Directory @Model.Directory is Empty !</h>
+    }
+}
+}

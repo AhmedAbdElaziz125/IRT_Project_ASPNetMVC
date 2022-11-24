@@ -6,50 +6,63 @@ namespace IRT_Project_ASPNetMVC.Controllers
 {
     public class BooleanRetrivalModel : Controller
     {
+        static System.Collections.Specialized.StringCollection log = new System.Collections.Specialized.StringCollection();
         public IActionResult Index()
         {
             return View();
         }
-        public IActionResult ShowMatrice(int DOC1_Id, string DOC1_Name, string DOC1_Text,
-                                         int DOC2_Id, string DOC2_Name, string DOC2_Text)
+        public IActionResult ShowMatrice() 
+        { 
+            return View();
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetFiles() 
+        { 
+            return View(); 
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetFiles(string path)
         {
-            
-            /*-----------------------------------------------*/
-            //////////////////////////////////////////////////
-            var doc1 = new DOC();
-            var doc1Terms = new List<string>();
-            foreach (var term in DOC1_Text.Split(' ', '.', StringSplitOptions.RemoveEmptyEntries))
+            // Specify the directories you want to manipulate.
+            DirectoryInfo dir = new DirectoryInfo(path);
+            Files filesList = new Files();
+            filesList.Directory = dir.FullName;
+            filesList.files = new List<FileContent>();
+            char[] delimiters = new char[] {' ',';', '\u002C', ';' };
+            try
             {
-                doc1Terms.Add(term.Trim());
+                // Determine whether the directory exists.
+                if (dir.Exists)
+                {
+                    // Indicate that the directory already exists.
+                    foreach (FileInfo file in dir.GetFiles().ToList())
+                    {
+                        FileContent fileContent = new FileContent();
+                        fileContent.FileName = file.Name;
+                        var reader = file.OpenText();
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            fileContent.FileWords = new List<string>();
+                            foreach (var word in line.Split(delimiters, StringSplitOptions.RemoveEmptyEntries))
+                            {
+                                fileContent.FileWords.Add(word.Trim());
+                            }
+                            fileContent.FileWords.Sort();
+                        }
+                        filesList.files.Add(fileContent);
+                    }
+                }
             }
-            doc1.DOC_Id = DOC1_Id;
-            doc1.DOC_Name = DOC1_Name;
-            doc1.DOC_Terms = doc1Terms;
-            /*-----------------------------------------------*/
-            //////////////////////////////////////////////////
-            var doc2 = new DOC();
-            var doc2Terms = new List<string>();
-            foreach (var term in DOC2_Text.Split(' ', '.', StringSplitOptions.RemoveEmptyEntries))
+            catch (Exception e)
             {
-                doc2Terms.Add(term.Trim());
+                return BadRequest("That path not exists :" + dir.FullName + "The process failed: {0}" + e.ToString() );
             }
-            doc2.DOC_Id = DOC2_Id;
-            doc2.DOC_Name = DOC2_Name;
-            doc2.DOC_Terms = doc2Terms;
-            /*-----------------------------------------------*/
-            //////////////////////////////////////////////////
-            var matrice = new Matrice();
-            matrice.Documents = new List<DOC>();
-            matrice.Documents.Add(doc1);
-            matrice.Documents.Add(doc2);
-            matrice.Terms = new List<string>();
-            matrice.Terms.AddRange(doc1Terms);
-            foreach(var term2 in doc2Terms)
-            {
-                if(!matrice.Terms.Contains(term2))
-                    matrice.Terms.Add(term2);
-            }
-            return View(matrice);
+            finally { }
+            return View(filesList);
         }
     }
     
