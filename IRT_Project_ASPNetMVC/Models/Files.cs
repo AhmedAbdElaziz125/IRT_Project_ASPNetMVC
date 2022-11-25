@@ -4,5 +4,6 @@
     {
         public string? Directory { get; set; }
         public List<FileContent>? files { get; set; }
+        public Dictionary<string, int>? DocumentFreq { get; set; } = new Dictionary<string, int>();
     }
 }
