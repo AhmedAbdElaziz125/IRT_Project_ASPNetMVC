@@ -26,70 +26,116 @@
 @{
     if (Model != null)
     {
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         int i = 1;
         var filename = "txt" + i;
-        <ol class="list-group">
-        @foreach (var file in Model)
+    <ol class="list-group">
+            @foreach (var file in Model)
         {
-            <li class="list-group-item d-flex justify-content-between align-items-center"
-                data-bs-toggle="collapse" href="#@filename" role="button" aria-expanded="false" aria-controls="@filename">
-                <code>@file.FileName</code>
-                <span class="badge bg-primary rounded-pill">@file.FileTerms.Count()</span>
-            </li>
-            <div class="collapse" id="@filename">
-                <div class="card card-body">
-                    <ol class="list-group list-group-numbered">
+                <li class="list-group-item d-flex justify-content-between align-items-center"
+                    data-bs-toggle="collapse" href="#@filename" role="button" aria-expanded="false" aria-controls="@filename">
+                    <code>@file.FileName</code>
+                    <span class="badge bg-primary rounded-pill">@file.FileTerms.Count()</span>
+                </li>
+                <div class="collapse" id="@filename">
+                    <div class="card card-body">
+                        <ol class="list-group list-group-numbered">
                         @foreach (var term in file.TermsFrequencies)
-                {
+                    {
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 @term.Key
                                 <span class="badge bg-danger rounded-pill">@term.Value</span>
                             </li>
-                }
-                    </ol>
+                    }
+                        </ol>
+                    </div>
                 </div>
-            </div>
             i++;
             filename += filename + i;
         }
-        </ol>
-        <br />
-        <hr />
-        <br />
-        <h3> Term-document incidence matrices </h3>
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th scope="col"> # </th>
-                    <th scope="col"> Term </th>
-                    @foreach (var doc in Model)
+    </ol>
+    <br />
+    <hr />
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    <br />
+    <h3> Term-document incidence matrices </h3>
+    <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col"> # </th>
+                        <th scope="col"> Term </th>
+                        @foreach (var doc in Model)
                     {
-                        <th scope="col">@doc.FileName</th>
+                            <th scope="col">@doc.FileName</th>
                     }
-                </tr>
-            </thead>
-            <tbody>
-                @{
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
                     int count = 1;
                     foreach (var term in terms)
                     {
-                        <tr>
-                            <th scope="row"> @count </th>
-                            <th> @term </th>
-                            @foreach (var doc in Model)
+                                <tr>
+                                    <th scope="row"> @count </th>
+                                    <th> @term </th>
+                                    @foreach (var doc in Model)
                             {
                                 if(doc.FileTerms.Contains(term)){
-                                    <td> 1 </td>
+                                            <td> 1 </td>
                                 }else{
-                                    <td> 0 </td>
+                                            <td> 0 </td>
                                 }
                             }
-                        </tr>
+                                </tr>
                         count++;
                     }
-                }
-            </tbody>
-        </table>
+                    }
+                </tbody>
+    </table>
+    <br />
+    <hr />
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    <br />
+    <h3> Postings Lists </h3>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th> Term </th>
+                <th> Posting List </th>
+                <th> TF </th>
+                <th> IDF </th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+            List<string> posting = new List<string>();
+            string post = null;
+            foreach (var term in terms)
+            {
+                posting = new List<string>();
+                post = null;
+                <tr>
+                    <th> @term </th>
+                    @foreach (var doc in Model)
+                    {
+                        if(doc.FileTerms.Contains(term)){
+                            posting.Add(doc.FileName);
+                        }
+                    }
+                    @foreach (var item in posting)
+                    {
+                        post += item +" "+ "→"+" ";
+                    }
+                    <td>@post</td>
+                    <th>@posting.Count()</th>
+                    <td></td>
+                </tr>
+            }
+            }
+        </tbody>
+    </table>
+    <br />
+    <hr />
     }
     else
     {
